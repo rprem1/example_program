@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name ="content">
+        <h:form id = "aircraftForm">
+        <p:growl id="growl" showDetail="false" life="6000" >
+                <p:autoUpdate/>
+        </p:growl>
+            <p:dataTable id ="aircraftTable" var ="aircraft" value ="#{aircraftListController.aircrafts}" style ="margin-top:10%;">
+                <p:column headerText ="Aircraft ID">
+                    <h:outputText value ="#{aircraft.aircraftId}" />
+                </p:column>
+                <p:column headerText ="Aircraft Type">
+                    <h:outputText value ="#{aircraft.aircraftType}" />
+                </p:column>
+                <p:column headerText ="Required Pilots">
+                    <h:outputText value ="#{aircraft.requiredPilotsAircraft}" />
+                </p:column>
+                <p:column headerText ="Required Board Personal">
+                    <h:outputText value ="#{aircraft.requiredBoardpersonalAircraft}" />
+                </p:column>
+                <p:column headerText ="Capacity">
+                    <h:outputText value ="#{aircraft.capacityAircraft}" />
+                </p:column>
+                <p:column style="width:100px;text-align: center">
+                    <p:commandButton update=":aircraftForm:aircraftEditDialog" oncomplete="PF('aircraftEditDialog').show()" icon="ui-icon-note" title="Edit">
+                        <f:setPropertyActionListener value="#{aircraft}" target="#{aircraftDetailController.aircraft}" />
+                    </p:commandButton>
+                    <p:commandButton action="#{aircraftDetailController.doDeleteAircraft}" icon="ui-icon-trash" title="Delete" update=":aircraftForm:aircraftTable">
+                        <f:setPropertyActionListener value="#{aircraft}" target="#{aircraftDetailController.aircraft}" />
+                        <p:confirm header="Confirmation" message="Are you sure that you want to delete this aircraft? You cannot undo this operation." icon="ui-icon-alert" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+
+
+
+            <p:commandButton  oncomplete="PF('aircraftCreationDialog').show()" icon="ui-icon-add-box" value ="New Aircraft">
+                <f:setPropertyActionListener value="#{aircraft}" target="#{aircraftCreationController.aircraft}" />
+            </p:commandButton>
+
+
+
+
+
+            <p:dialog header ="Create Aircraft" id ="aircraftCreationDialog" widgetVar ="aircraftCreationDialog" modal ="true" showEffect ="fade" hideEffect ="fade" resizable ="false">
+                <p:outputPanel id ="aircraftCreateData" rendered ="#{aircraftCreationController.setNewAircraft()}">
+                    <h:panelGrid columns ="2">
+                        <p:outputLabel for="aircraftId" value ="Aircraft ID: "/>
+                        <p:inputText id ="newAircraftId" value ="#{aircraftCreationController.aircraft.aircraftId}" style ="color:white;" />
+                        <p:outputLabel for="aircraftType" value ="Aircraft Type: "/>
+                        <p:inputText id ="newAircraftType" value ="#{aircraftCreationController.aircraft.aircraftType}" style ="color:white;"/>
+
+                    </h:panelGrid>
+
+                    <p:separator />
+
+                    <h:panelGrid columns ="2">
+                        <p:outputLabel for="requiredPilots" value ="Required Pilots: "/>
+                        <p:inputText id ="newRequiredPilots" value ="#{aircraftCreationController.aircraft.requiredPilotsAircraft}" style ="color:white;" />
+                        <p:outputLabel for="requiredBP" value ="Required Board Personal: "/>
+                        <p:inputText id ="newRequiredBP" value ="#{aircraftCreationController.aircraft.requiredBoardpersonalAircraft}"  style ="color:white;"/>
+                        <p:outputLabel for="capacity" value ="Capacity: "/>
+                        <p:inputText id ="newCapacity" value ="#{aircraftCreationController.aircraft.capacityAircraft}" style ="color:white;"/>
+                    </h:panelGrid>
+
+                    <p:separator />
+
+                    <h:panelGrid columns ="2">
+                        <p:commandButton value="Save" action="#{aircraftCreationController.doSaveAircraft()}" oncomplete="PF('aircraftEditDialog').hide()" update=":aircraftForm:aircraftTable"/>
+                        <p:commandButton value="Abort" onclick="PF('aircraftCreationDialog').hide()"/>
+                    </h:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+
+
+            <p:dialog header ="Edit Aircraft" id ="aircraftEditDialog" widgetVar ="aircraftEditDialog" modal ="true" showEffect ="fade" hideEffect ="fade" resizable ="false">
+                <p:outputPanel id ="aircraftData" rendered ="#{not empty aircraftDetailController.aircraft}">
+                    <h:panelGrid columns ="2">
+                        <p:outputLabel for="aircraftId" value ="Aircraft ID: "/>
+                        <p:inputText id ="aircraftId" value ="#{aircraftDetailController.aircraft.aircraftId}" disabled = "true" style ="color:white;"/>
+                        <p:outputLabel for="aircraftType" value ="Aircraft Type: "/>
+                        <p:inputText id ="aircraftType" value ="#{aircraftDetailController.aircraft.aircraftType}"  disabled = "true" style ="color:white;"/>
+
+                    </h:panelGrid>
+
+                    <p:separator />
+
+                    <h:panelGrid columns ="2">
+                        <p:outputLabel for="requiredPilots" value ="Required Pilots: "/>
+                        <p:inputText id ="requiredPilots" value ="#{aircraftDetailController.aircraft.requiredPilotsAircraft} " style ="color:white;" />
+                        <p:outputLabel for="requiredBP" value ="Required Board Personal: "/>
+                        <p:inputText id ="requiredBP" value ="#{aircraftDetailController.aircraft.requiredBoardpersonalAircraft}" style ="color:white;"/>
+                        <p:outputLabel for="capacity" value ="Capacity: "/>
+                        <p:inputText id ="capacity" value ="#{aircraftDetailController.aircraft.capacityAircraft}" style ="color:white;" />
+                    </h:panelGrid>
+
+                    <p:separator />
+
+
+                    <h:panelGrid columns ="2">
+                        <p:commandButton value="Save" action="#{aircraftDetailController.doSaveAircraft()}" oncomplete="PF('aircraftEditDialog').hide()" update=":aircraftForm:aircraftTable"/>
+                        <p:commandButton value="Abort" onclick="PF('aircraftEditDialog').hide()"/>
+                    </h:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="300">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+
+
+        </h:form>
+
+
+
+
+
+
+    </ui:define>
+</ui:composition>

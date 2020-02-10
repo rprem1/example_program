@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name ="content">
+
+        <style type="text/css">
+
+            .dateSelect {
+                width: 100px;
+            }
+
+            .ui-datatable .ui-datatable-header {
+                text-align: right !important;
+            }
+
+            .ui-button-text-only .ui-button-text {
+                padding: 0.3em 0.4em;
+            }
+
+            .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-header .ui-chkbox {
+                visibility: hidden;
+            }
+
+            .ui-filter-column .ui-column-customfilter .custom-filter {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+        </style>
+
+        <h:form>
+
+            <p:dataTable var="flight"  value="#{flightFilterController.flights}" widgetVar="flightsTable"
+                         filteredValue="#{flightFilterController.filteredFlights}" rowKey="#{flight.flightId}" style ="margin-top:10%;"
+                        rows="10" paginator="true" paginatorTemplate="{PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+                        rowsPerPageTemplate="5,10,15" paginatorPosition="bottom">
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="Search all fields:" />
+                        <p:inputText id="globalFilter" onkeyup="PF('flightsTable').filter()" style="width:150px" placeholder="Enter keyword"/>
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column filterBy="#{flight.flightId}" headerText="Flight ID" filterMatchMode="contains" style="vertical-align: bottom" >
+                    <h:outputText value ="#{flight.flightId}"/>
+                </p:column>
+
+                <p:column filterBy="#{flight.iataFrom}" headerText="IATA From" filterMatchMode="contains" style="vertical-align: bottom">
+                    <h:outputText value ="#{flight.iataFrom}"/>
+                </p:column>
+
+                <p:column filterBy="#{flight.iataTo}" headerText="IATA To" filterMatchMode="contains" >
+                    <h:outputText value ="#{flight.iataTo}"/>
+                </p:column>
+
+                <p:column filterBy="#{flight.departureTime}" headerText="Departure Time" filterMatchMode="contains" >
+                    <h:outputText value ="#{flight.departureTime}">
+                        <f:convertDateTime pattern="HH:mm" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column filterBy="#{flight.arrivalTime}" headerText="Arrival Time" filterMatchMode="contains" >
+                    <h:outputText value ="#{flight.arrivalTime}">
+                        <f:convertDateTime pattern="HH:mm" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Datum" filterBy="#{flight.departureTime}" filterFunction="#{flightFilterController.filterByDate}" style="width:120px" >
+                    <f:facet name="filter">
+                        <h:inputHidden id="filter" />
+                    </f:facet>
+                    <f:facet name="header">
+                        <p:outputLabel value="Datum" />
+                        <br />
+                        <p:calendar id="from" pattern="dd.MM.yyyy" inputStyleClass="dateSelect">
+                            <p:ajax event="dateSelect" onstart="$(PrimeFaces.escapeClientId('#{p:component('filter')}'))[0].value = $(PrimeFaces.escapeClientId('#{p:component('from')}_input'))[0].value + '-' + $(PrimeFaces.escapeClientId('#{p:component('to')}_input'))[0].value" oncomplete="PF('flightsTable').filter()" />
+                        </p:calendar>
+                        <p:calendar id="to" pattern="dd.MM.yyyy" inputStyleClass="dateSelect">
+                            <p:ajax event="dateSelect" onstart="$(PrimeFaces.escapeClientId('#{p:component('filter')}'))[0].value = $(PrimeFaces.escapeClientId('#{p:component('from')}_input'))[0].value + '-' + $(PrimeFaces.escapeClientId('#{p:component('to')}_input'))[0].value" oncomplete="PF('flightsTable').filter()" />
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputText value="#{flight.departureTime}">
+                        <f:convertDateTime type="date" dateStyle="medium" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column filterBy="#{flight.numberOfPassengers}" headerText="Passengers" style="width:87px" filterMatchMode="contains" >
+                    <h:outputText value ="#{flight.numberOfPassengers}"/>
+                </p:column>
+
+                <p:column filterBy="#{flight.scheduledAircraft.aircraftId}" headerText="Aircraft" filterMatchMode="contains" >
+                    <h:outputText value ="#{flight.scheduledAircraft.aircraftId}"/>
+                </p:column>
+
+                <p:column filterBy="#{flight.getPersonal()}" headerText="Personal" filterMatchMode="contains" >
+                    <h:outputText value ="#{flight.getPersonal()}"/>
+                </p:column>
+
+
+            </p:dataTable>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

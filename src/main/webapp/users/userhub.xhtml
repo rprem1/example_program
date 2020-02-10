@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name ="content">
+
+        <script type ="text/javascript">
+
+               // calculates the days between the two holiday days selected
+               
+             function dayCalc(){
+                    var d1 = document.getElementById("holidayForm:newHolidayFrom");
+                    var d2 = document.getElementById("holidayForm:newHolidayUntil");
+
+                    var date1 = new Date(d1.value);
+                    var date2 = new Date(d2.value);
+
+                    var diff_time = date2.getTime() - date1.getTime();
+                    var diff_days = diff_time / (1000*3600*24);
+
+                    document.getElementById("holidayForm:holidayDays").value = diff_days;
+                    return diff_days;
+             }
+
+        </script>
+
+
+        <h:form id="holidayForm">
+                       <p:growl id="growl" showDetail="false" life="6000" >
+                <p:autoUpdate/>
+        </p:growl>
+            <p:panel header ="Registered Holiday">
+                <p:dataTable id="holidayTable" var="holiday" value="#{holidayListController.getHolidayByUser(userService.loadUser(sessionInfoBean.getCurrentUserName()))}">
+                    <p:column headerText="Holiday From:">
+                        <h:outputText value ="#{holiday.holidayFrom}"/>
+                    </p:column>
+                    <p:column headerText="Holiday Until:">
+                        <h:outputText value ="#{holiday.holidayUntil}"/>
+                    </p:column>
+                    <p:column headerText="Days Used:">
+                        <h:outputText value ="#{holiday.holidayDays}"/>
+                    </p:column>
+
+                    <p:column style="width:100px;text-align: center">
+                        <p:commandButton update=":holidayForm:holidayEditDialog" oncomplete="PF('holidayEditDialog').show()" icon="ui-icon-note" title="Edit">
+                            <f:setPropertyActionListener value="#{holiday}" target="#{holidayDetailController.holiday}" />
+                        </p:commandButton>
+
+
+                        <p:commandButton action="#{holidayDetailController.doDeleteHoliday}" icon="ui-icon-trash" title="Delete" update=":holidayForm:holidayTable">
+                            <f:setPropertyActionListener value="#{holiday}" target="#{holidayDetailController.holiday}" />
+                            <p:confirm header="Confirmation" message="Are you sure that you want to delete this holiday? You cannot undo this operation." icon="ui-icon-alert" />
+                        </p:commandButton>
+                    </p:column>
+
+
+
+
+                    <f:facet name ="footer">
+
+
+                     Total Days: #{holidayListController.getHolidayByUser(userService.loadUser(sessionInfoBean.getCurrentUserName())).stream().map(holiday->holiday.holidayDays).sum()}
+
+
+                        <div id ="hDays" style="display:none;">
+                            #{holidayListController.getHolidayByUser(userService.loadUser(sessionInfoBean.getCurrentUserName())).stream().map(holiday->holiday.holidayDays).sum()}
+                        </div>
+
+
+
+                    </f:facet>
+                </p:dataTable>
+            </p:panel>
+
+
+            <p:dialog header ="Edit Holiday" id ="holidayEditDialog" widgetVar ="holidayEditDialog" modal ="true" showEffect ="fade" hideEffect ="fade" resizable ="false">
+                <p:outputPanel id ="holidayData" rendered ="#{not empty holidayDetailController.holiday}">
+                    <h:panelGrid columns ="2">
+                        <p:outputLabel for="holidayFrom" value ="Holiday From: "/>
+                        <p:inputText id ="holidayFrom" value ="#{holidayDetailController.holiday.holidayFrom}" disabled = "true"/>
+                        <p:outputLabel for="holidayUntil" value ="Holiday Until: "/>
+                        <p:inputText id ="holidayUntil" value ="#{holidayDetailController.holiday.holidayUntil}" />
+
+                    </h:panelGrid>
+
+                    <p:separator />
+
+
+                    <h:panelGrid columns ="2">
+                        <p:commandButton value="Save" action="#{holidayDetailController.doSaveHoliday()}" oncomplete="PF('holidayEditDialog').hide()" update=":holidayForm:holidayTable"/>
+                        <p:commandButton value="Abort" onclick="PF('holidayEditDialog').hide()"/>
+                    </h:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+
+            <p:commandButton oncomplete="PF('holidayCreationDialog').show()" icon="ui-icon-add-box" value ="New Holiday" rendered="#{holidayListController.getHolidayByUser(userService.loadUser(sessionInfoBean.getCurrentUserName())).stream().map(holiday->holiday.holidayDays).sum() le 35}">
+                <f:setPropertyActionListener value="#{sessionInfoBean.currentUserName}" target="#{holidayCreationController.holiday.username}" />
+            </p:commandButton>
+
+
+            <h:panelGroup layout ="block" style ="height: 30px; color:#D8000C; font-family: sans-serif; background-color:#FFBABA; padding-left: 10px; padding-top: 5px;" rendered ="#{holidayListController.getHolidayByUser(userService.loadUser(sessionInfoBean.getCurrentUserName())).stream().map(holiday->holiday.holidayDays).sum() gt 35}">
+                You have reached your maximum holiday days.
+            </h:panelGroup>
+
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="300">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+
+
+            <p:dialog header ="Register Holiday" id ="holidayCreationDialog" widgetVar ="holidayCreationDialog" modal ="true" showEffect ="fade" hideEffect ="fade" resizable ="false">
+                <p:outputPanel id ="holidayCreateData">
+                    <h:panelGrid columns ="2">
+
+
+                        <p:outputLabel for="holidayFrom" value ="Holiday From: (YYYY-MM-DD)"/>
+                        <p:inputMask id ="newHolidayFrom"  value ="#{holidayCreationController.holiday.holidayFrom}" mask = "9999-99-99" style ="color:white;"/>
+                        <p:outputLabel for="holidayUntil" value ="Holiday Until: (YYYY-MM-DD)"/>
+                        <p:inputMask id ="newHolidayUntil" value ="#{holidayCreationController.holiday.holidayUntil}" mask = "9999-99-99" style ="color:white;" onchange="dayCalc();"/>
+                        <h:inputHidden id ="holidayDays" value ="#{holidayCreationController.holiday.holidayDays}" style ="color:white;" />
+
+
+
+
+                    </h:panelGrid>
+
+                    <p:separator />
+
+                    <p:separator />
+
+
+                    <h:panelGrid columns ="2">
+                        <p:commandButton value="Save" action="#{holidayCreationController.doSaveHoliday()}"  oncomplete="location.reload()" update=":holidayForm:holidayTable" />
+
+                        <p:commandButton value="Abort" onclick="PF('holidayCreationDialog').hide()"/>
+
+
+                    </h:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+
+
+
+
+
+            <p:panel header ="Dienstplan" style = "margin-top:20px;">
+
+            <h:panelGrid >
+                <p:schedule id="schedule" value="#{rosterController.eventModel}" widgetVar="myschedule" >
+
+                    <p:ajax event="eventSelect" listener="#{rosterController.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
+
+                </p:schedule>
+            </h:panelGrid>
+
+                <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
+                    <h:panelGrid id="eventDetails" columns="2">
+                        <p:outputLabel for="title" value="Titles:" />
+                        <p:outputLabel id="title" value="#{rosterController.event.title}" required="true" />
+
+                        <p:outputLabel for="descr" value="Description:" />
+                        <p:outputLabel id="descr" value="#{rosterController.event.description}" />
+
+                        <p:outputLabel for="from" value="From:" />
+                        <p:outputLabel id="from" value="#{rosterController.event.startDate}" pattern="dd/MM/yyyy" showTime="true"   />
+
+                        <p:outputLabel for="to" value="To:" />
+                        <p:outputLabel id="to" value="#{rosterController.event.endDate}" pattern="dd/MM/yyyy" showTime="true"  />
+
+                    </h:panelGrid>
+                </p:dialog>
+
+            </p:panel>
+
+
+
+
+        </h:form>
+    </ui:define>
+
+
+</ui:composition>
+
+

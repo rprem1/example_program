@@ -1,0 +1,97 @@
+body {
+
+  background-color: black;
+  background-repeat: repeat;
+  font-family: AvenirNext-Bold;
+  font-size: 15px;
+  color: #4A4A4A;
+  letter-spacing: 0;
+}
+
+.page{
+
+    background-color: black;
+}
+
+
+.main_box{
+
+  background-image: linear-gradient(180deg, #000000 0%, #271C1C 99%);
+  height: 100%;
+  width: 50%;
+  position: fixed;
+  top: 0;
+  left: 25%;
+  padding-top: 5%;
+
+
+}
+
+
+.logo_box{
+  display: blocked;
+  margin-left: 25%;
+}
+
+.login_box{
+
+  margin-top: 15%;
+  margin-left: 25%;
+
+}
+
+input[type = text]{
+    background-color: white;
+    background-position: 10px 10px;
+    width: 245px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-family: AvenirNext-Bold;
+    font-size: 10px;
+    color: #4A4A4A;
+    letter-spacing: 0;
+    padding: 12px 10px 12px 12px;
+    z-index: 10;
+    margin-bottom: 10px;
+}
+
+input[type = password]{
+  background-color: white;
+  background-position: 10px 10px;
+  width: 245px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-family: AvenirNext-Bold;
+  font-size: 10px;
+  color: #4A4A4A;
+  letter-spacing: 0;
+  padding: 12px 10px 12px 12px;
+  z-index: 10;
+  margin-bottom: 10px;
+
+}
+
+
+
+.login_buttons_box{
+
+  margin-top: 25px;
+
+}
+
+.button{
+
+  font-family: AvenirNext-Bold;
+  font-size: 15px;
+  color: #4A4A4A;
+  letter-spacing: 0;
+  background-color: transparent;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+
+}

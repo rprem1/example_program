@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+<h:head>
+    <title>Airport Innsbruck</title>
+    <style>
+            html{
+                height: 100%;
+            }
+        </style>
+
+
+</h:head>
+
+<h:body style ="background-color:#D8D8D8; height = 100%;">
+
+
+    <div class = "wholePage">
+        <div class = "page" style = "height:100%;">
+            <div id ="sidebar" style="position: fixed; background-color:black; background-image: linear-gradient(180deg, #000000 0%, #271C1C 99%);width:250px;height:100%; top: 0; left: 0;padding-top: 5%;">
+                <div id ="logoBox" style="padding-left: 5%">
+
+                    <h:graphicImage library ="images" name = "ia_logo.png"/>
+                </div>
+
+
+
+                <div id = "header" style="padding-left: 5% top:0; left: 0; margin-bottom: 10px; width: 100%;  background-color: white;color:blue;">
+                    <ui:include src="/WEB-INF/includes/sidebar.xhtml" />
+
+                </div>
+
+                <div id = "footer" style="font-size: 10px; margin-top: 150%; height: 30px;bottom: 0; left: 0;color: white; position: fixed;">
+                    <ui:include src="/WEB-INF/includes/footer.xhtml" />
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class = "main" style ="margin-left:25%; width: 70%;">
+            <div id="content" style="alignment: center;">
+                <ui:insert name="content">Content</ui:insert>
+            </div>
+        </div>
+    </div>
+
+
+
+</h:body>
+</html>
